@@ -2,23 +2,37 @@
   <div class="app">
     <h1>Page for posts</h1>
 
-    <my-input v-model="searchQuery" placeholder="Search..."/>
-
+    <my-input v-model="searchQuery" placeholder="Search..." />
 
     <div class="app__btns">
       <my-button @click="dialogVisible = true">Create post</my-button>
-      <my-select
-      v-model="selectedSort"
-      :options="sortOptions"
-      />
+      <my-select v-model="selectedSort" :options="sortOptions" />
     </div>
 
     <my-dialog v-model:show="dialogVisible">
       <post-form @create="createPost" />
     </my-dialog>
 
-    <post-list :posts="sortedAndSearchedPosts" @remove="removePost" v-if="!isPostLoading" />
+    <post-list
+      :posts="sortedAndSearchedPosts"
+      @remove="removePost"
+      v-if="!isPostLoading"
+    />
     <div v-else>Loading...</div>
+
+    <div ref="observer" class="observer"></div>
+
+    <!-- <div class="page__wrapper">
+      <div v-for="pageNum in totalPages" :key="pageNum" class="page"
+      :class="{
+        'current-page': page === pageNum
+      }"
+      @click="changePage(pageNum)"
+      >
+
+        {{ pageNum }}
+      </div>
+    </div> -->
   </div>
 </template>
 
@@ -37,12 +51,15 @@ export default {
       posts: [],
       dialogVisible: false,
       isPostLoading: false,
-      selectedSort: '',
+      selectedSort: "",
+      page: 1,
+      limit: 10,
+      totalPages: 0,
       sortOptions: [
         { name: "Name", value: "title" },
         { name: "Description", value: "body" },
       ],
-      searchQuery: '',
+      searchQuery: "",
     };
   },
   methods: {
@@ -55,11 +72,24 @@ export default {
       this.posts = this.posts.filter((p) => p.id !== post.id);
     },
 
+    // changePage(pageNumber) {
+    //   this.page = pageNumber;
+    // },
+
     async fetchPosts() {
       try {
         this.isPostLoading = true;
         const response = await axios.get(
-          "https://jsonplaceholder.typicode.com/posts?_limit=5"
+          "https://jsonplaceholder.typicode.com/posts",
+          {
+            params: {
+              _page: this.page,
+              _limit: this.limit,
+            },
+          }
+        );
+        this.totalPages = Math.ceil(
+          response.headers["x-total-count"] / this.limit
         );
         this.posts = response.data;
         this.isPostLoading = false;
@@ -67,28 +97,59 @@ export default {
         console.log(e);
       }
     },
+
+    async loadMorePosts() {
+      try {
+        this.page += 1;
+        const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+          params: {
+            _page: this.page,
+            _limit: this.limit
+          }
+        });
+        this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
+        this.posts = [...this.posts, ...response.data];
+      } catch (e) {
+        alert('Ошибка')
+      }
+    }
   },
 
   mounted() {
     this.fetchPosts();
+const options = {
+      rootMargin: '0px',
+      threshold: 1.0
+    }
+    const callback = (entries) => {
+      if (entries[0].isIntersecting && this.page < this.totalPages) {
+        this.loadMorePosts()
+      }
+    };
+    const observer = new IntersectionObserver(callback, options);
+    observer.observe(this.$refs.observer);
   },
 
   computed: {
-  sortedPosts() {
-    return [...this.posts].sort((post1, post2) => {
-      const value1 = post1[this.selectedSort] || ''; 
-      const value2 = post2[this.selectedSort] || '';
-      return value1.toString().localeCompare(value2.toString());
-    });
-  },
+    sortedPosts() {
+      return [...this.posts].sort((post1, post2) => {
+        const value1 = post1[this.selectedSort] || "";
+        const value2 = post2[this.selectedSort] || "";
+        return value1.toString().localeCompare(value2.toString());
+      });
+    },
 
-  sortedAndSearchedPosts() {
-    return this.sortedPosts.filter(post => post.title.toLowerCase().includes(this.searchQuery.toLowerCase()));
+    sortedAndSearchedPosts() {
+      return this.sortedPosts.filter((post) =>
+        post.title.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
   },
-},
-
 
   watch: {
+    // page() {
+    //   this.fetchPosts();
+    // },
   },
 };
 </script>
@@ -98,4 +159,23 @@ export default {
   display: flex;
   justify-content: space-between;
 }
+
+.page__wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.page {
+  padding: 5px 10px;
+  border: 1px solid teal;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.current-page {
+  background: teal;
+  color: white;
+}
+
 </style>
