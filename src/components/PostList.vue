@@ -1,8 +1,11 @@
 <template>
-<div>
+<div v-if="posts.length > 0">
   <h3>List of users</h3>
-  <post-item v-for="post in posts" :key="post.id" :post="post"/>
+  <post-item v-for="post in posts" :key="post.id" :post="post"
+  @remove="$emit('remove', post)"
+  />
 </div>
+<h2 v-else>List is empty, create a post</h2>
 </template>
 
 <script>
@@ -21,5 +24,7 @@ export default{
 </script>
 
 <style scoped>
-
+h2{
+  color: red;
+}
 </style>

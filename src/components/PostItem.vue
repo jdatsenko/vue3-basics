@@ -1,29 +1,25 @@
 <template>
+  <div>
+    <div class="post" :key="post.id">
+      <div><strong>Name</strong> {{ post.title }}</div>
+      <div><strong>Description</strong> {{ post.body }}</div>
+    </div>
 
-<div>
-  <div class="post" :key="post.id">
-    <div><strong>Name</strong> {{ post.title }}</div>
-    <div><strong>Description</strong> {{ post.body }}</div>
+    <div class="post_btns">
+      <my-button @click="$emit('remove', post)">Delete</my-button>
+    </div>
   </div>
-
-  <div class="post_btns">
-    <my-button class="btn">Delete</my-button>
-  </div>
-</div>
-  
 </template>
 
 <script>
-
 export default {
-
   props: {
     post: {
       type: Object,
       required: true,
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>

@@ -45,10 +45,8 @@
   </script>
   
   <style scoped>
-  form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    margin: 0 auto;
-  }
+form{
+  display: flex;
+  flex-direction: column;
+}
   </style>
