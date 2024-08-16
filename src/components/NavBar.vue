@@ -3,6 +3,8 @@
       <div class="navbar__btns">
         <my-button @click="$router.push('/post')">Posts</my-button>
         <my-button style="margin-left: 20px" @click="$router.push('./')">Home</my-button>
+        <my-button style="margin-left: 20px" @click="$router.push('/store')">Storage</my-button>
+
       </div>
     </div>
   </template>
