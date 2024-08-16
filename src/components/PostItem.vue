@@ -8,7 +8,7 @@
 
     <div class="post_btns">
       <my-button @click="$emit('remove', post)">Delete</my-button>
-      <my-button @click="$emit('open', post)">Open</my-button>
+      <my-button @click="$router.push(`/post/${post.id}`)">Open</my-button>
     </div>
   </div>
 </template>
@@ -21,6 +21,7 @@ export default {
       required: true,
     },
   },
+  
 };
 </script>
 
