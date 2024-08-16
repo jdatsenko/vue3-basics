@@ -2,7 +2,7 @@
     <div>
       <h1>Page for posts</h1>
   
-      <my-input v-model="searchQuery" placeholder="Search..." />
+      <my-input v-focus v-model="searchQuery" placeholder="Search..." />
   
       <div class="app__btns">
         <my-button @click="dialogVisible = true">Create post</my-button>

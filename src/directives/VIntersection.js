@@ -1,10 +1,5 @@
-<template>
-    <div></div>
-  </template>
-  
-  <script>
   export default {
-    name: 'VIntersectionObserver',
+    name: 'intersection',
     mounted(el, binding) {
       const options = {
         rootMargin: '0px',
@@ -21,10 +16,5 @@
       observer.observe(el);
     },
   };
-  </script>
-  
-  <style scoped>
-  /* Стили компонента */
-  </style>
   
   
